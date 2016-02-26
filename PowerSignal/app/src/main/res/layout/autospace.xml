@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!--<LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Интервал сбора данных сети"
+            android:id="@+id/auto_text"
+            android:layout_gravity="center" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:ems="10"
+            android:id="@+id/interval"
+            android:layout_gravity="center_horizontal"
+            android:hint="Введите интервал (мин.)"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="2">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Старт"
+            android:id="@+id/startService"
+            android:background="@drawable/btn_style"
+            style="@style/btn_text_style"
+            android:layout_weight="1"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Стоп"
+            android:id="@+id/stopService"
+            android:background="@drawable/btn_style"
+            style="@style/btn_text_style"
+            android:layout_weight="1"/>
+
+    </LinearLayout>-->
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Интервал сбора данных сети"
+            android:id="@+id/auto_text"
+            android:textSize="16dp"
+            android:layout_gravity="center" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="2">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:text="-"
+                android:id="@+id/minus_min"
+                android:layout_weight="1"
+                android:background="@drawable/btn_style"
+                style="@style/btn_text_style"/>
+
+            <TextView
+                android:layout_width="30dp"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="0"
+                android:layout_marginRight="5dp"
+                android:layout_marginLeft="5dp"
+                android:id="@+id/minuts"
+                android:textSize="18dp"
+                android:layout_gravity="center"
+                android:gravity="center" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:text="+"
+                android:id="@+id/plus_min"
+                android:layout_weight="1"
+                android:background="@drawable/btn_style"
+                style="@style/btn_text_style"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:text="-"
+                android:id="@+id/minus_sec"
+                android:layout_weight="1"
+                android:background="@drawable/btn_style"
+                style="@style/btn_text_style"/>
+
+            <TextView
+                android:layout_width="30dp"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="15"
+                android:id="@+id/secunds"
+                android:layout_marginRight="5dp"
+                android:layout_marginLeft="5dp"
+                android:textSize="18dp"
+                android:layout_gravity="center"
+                android:gravity="center"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:text="+"
+                android:id="@+id/plus_sec"
+                android:layout_weight="1"
+                android:background="@drawable/btn_style"
+                style="@style/btn_text_style"/>
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="2">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:text="Старт"
+                android:id="@+id/startService"
+                android:background="@drawable/btn_style"
+                style="@style/btn_text_style"
+                android:layout_weight="1"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:text="Стоп"
+                android:id="@+id/stopService"
+                android:background="@drawable/btn_style"
+                style="@style/btn_text_style"
+                android:layout_weight="1"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
