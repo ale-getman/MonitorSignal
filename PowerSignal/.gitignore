@@ -1,3 +1,5 @@
+/app/src/test/java/com/signal/dis/powersignal/ExampleUnitTest.java
+/app/src/androidTest/java/com/signal/dis/powersignal/ApplicationTest.java
 .gradle
 /local.properties
 /.idea/workspace.xml
