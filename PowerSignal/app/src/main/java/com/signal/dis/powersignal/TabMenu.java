@@ -3,19 +3,24 @@ package com.signal.dis.powersignal;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TabActivity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.provider.MediaStore;
 import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
@@ -36,9 +41,13 @@ import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.w3c.dom.Text;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -91,6 +100,12 @@ public class TabMenu extends Activity {
     public PowerManager.WakeLock wl;
     public int buf_flag;
 
+    public Context context;
+    public Intent notificationIntent;
+    public PendingIntent contentIntent;
+
+    public String TAG = "LOGI";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,8 +118,18 @@ public class TabMenu extends Activity {
 
         startService(new Intent(TabMenu.this, WifiService.class).putExtra("pend", pi));
 
-        mDatabaseHelper = new DatabaseHelper(this, "mydatabase.db", null, 6);
+        mDatabaseHelper = new DatabaseHelper(this, "mydatabase.db", null, 7);
         sdb = mDatabaseHelper.getWritableDatabase();
+
+        String querySelect = "SELECT * FROM " + DatabaseHelper.BS_TABLE;
+        Cursor cursorSelect = sdb.rawQuery(querySelect,null);
+        if(cursorSelect.moveToFirst())
+            Log.d(TAG, "Таблица заполнена");
+        else {
+            Log.d(TAG, "Таблица не заполнена");
+            importExcel2Sqlite();
+        }
+        cursorSelect.close();
 
         gps = new GPSTracker(TabMenu.this);
 
@@ -198,6 +223,12 @@ public class TabMenu extends Activity {
             Log.d("TEL", "Lac" + gsmCell.getLac());
             Log.d("TEL", "Psc" + gsmCell.getPsc());
         }*/
+        context = getApplicationContext();
+
+        notificationIntent = new Intent(context, TabMenu.class);
+        contentIntent = PendingIntent.getActivity(context,
+                0, notificationIntent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
     @Override
@@ -253,6 +284,35 @@ public class TabMenu extends Activity {
         }
     }
 
+    private void importExcel2Sqlite() {
+        AssetManager am = this.getAssets();
+        InputStream inStream;
+        Workbook wb = null;
+        try {
+            // Читайте .xls файлы: в папке активов
+            inStream = am.open("base_stations.xls");
+            // HSSF
+            wb = new HSSFWorkbook(inStream);
+            inStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (wb == null) {
+            Log.e(TAG, "Ошибка чтения документа Excel из активов");
+            return;
+        }
+
+        Sheet sheet1 = wb.getSheetAt(0);// Первая форма
+        Sheet sheet2 = wb.getSheetAt(1);
+        if (sheet1 == null) {
+            return;
+        }
+
+        Excel2SQLiteHelper.insertExcelToSqlite(sdb, sheet1);
+        Excel2SQLiteHelper.insertExcelToSqlite(sdb, sheet2);
+        Log.e(TAG, "Данные вставляются успешно");
+    }
+
     public static View createTabView(final Context context, final String text) {
 
         View view = LayoutInflater.from(context).inflate(R.layout.tab_bg, null);
@@ -284,8 +344,8 @@ public class TabMenu extends Activity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //(view).setBackgroundColor(Color.parseColor("#FF7d31df"));
                 float buf = Float.valueOf(((TextView) view.findViewById(R.id.weight)).getText().toString());
-                int buff = (int) ((113+buf)/2);
-                buff = (int)((float)buff / MAX_SIGNAL_DBM_VALUE* 1000);
+                int buff = (int) ((113 + buf) / 2);
+                buff = (int) ((float) buff / MAX_SIGNAL_DBM_VALUE * 1000);
                 progressBar.setProgress(buff);
             }
         });
@@ -321,8 +381,58 @@ public class TabMenu extends Activity {
         // Вставляем данные в таблицу
         sdb.insert("WeightSignal_2", null, newValues_2);
 
+        check_bs();
+
         CreateList();
         TabMenu.progressBar.setProgress(TabMenu.progress);
+    }
+
+    public void check_bs(){
+        String cid_buff = cid + ".0";
+        String querySelect = "SELECT * FROM " + DatabaseHelper.BS_TABLE + " WHERE " + DatabaseHelper.BS_SID1 + " = " + cid_buff;
+        Cursor cursorSelect = sdb.rawQuery(querySelect,null);
+        if(cursorSelect.moveToFirst()) {
+            Log.d(TAG, "cid_1 : " + cursorSelect.getString(cursorSelect.getColumnIndex(DatabaseHelper.BS_SID1)));
+            if(cursorSelect.getString(cursorSelect.getColumnIndex(DatabaseHelper.BS_PLACE)).equals("Украина"))
+                notificationBS("Опасная базовая станция");
+        }
+        else
+        {
+            String querySelect_2 = "SELECT * FROM " + DatabaseHelper.BS_TABLE + " WHERE " + DatabaseHelper.BS_SID2 + " = " + cid_buff;
+            Cursor cursorSelect_2 = sdb.rawQuery(querySelect_2,null);
+            if(cursorSelect_2.moveToFirst()) {
+                Log.d(TAG, "cid_2 : " + cursorSelect_2.getString(cursorSelect_2.getColumnIndex(DatabaseHelper.BS_SID2)));
+                if(cursorSelect_2.getString(cursorSelect_2.getColumnIndex(DatabaseHelper.BS_PLACE)).equals("Украина"))
+                    notificationBS("Опасная базовая станция");
+            }
+            else
+                notificationBS("Базовой станции нет в базе");
+            cursorSelect_2.close();
+        }
+        cursorSelect.close();
+    }
+
+    public void notificationBS(String msg_alert){
+        long[] vibrate = new long[] { 1000, 1000, 1000 };
+
+        Notification.Builder builder = new Notification.Builder(context);
+
+        builder.setContentIntent(contentIntent)
+                .setSmallIcon(R.drawable.logo)
+                .setTicker("ВНИМАНИЕ")
+                .setWhen(System.currentTimeMillis())
+                .setAutoCancel(true)
+                .setVibrate(vibrate)
+                .setContentTitle("Предупреждение")
+                .setSound(Uri.withAppendedPath(MediaStore.Audio.Media.INTERNAL_CONTENT_URI, "1"))
+                .setContentText(msg_alert); // Текст уведомления
+
+        // Notification notification = builder.getNotification(); // до API 16
+        Notification notification = builder.build();
+
+        NotificationManager notificationManager = (NotificationManager) context
+                .getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(321321, notification);
     }
 
     public void GPSsetting(){

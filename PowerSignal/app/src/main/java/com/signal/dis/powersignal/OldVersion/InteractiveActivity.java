@@ -1,4 +1,4 @@
-package com.signal.dis.powersignal;
+package com.signal.dis.powersignal.OldVersion;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -13,12 +13,15 @@ import android.telephony.TelephonyManager;
 import android.telephony.gsm.GsmCellLocation;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import com.signal.dis.powersignal.DatabaseHelper;
+import com.signal.dis.powersignal.GPSTracker;
+import com.signal.dis.powersignal.R;
+import com.signal.dis.powersignal.TabMenu;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ResponseHandler;

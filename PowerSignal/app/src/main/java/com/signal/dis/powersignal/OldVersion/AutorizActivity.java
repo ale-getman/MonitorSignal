@@ -1,10 +1,12 @@
-package com.signal.dis.powersignal;
+package com.signal.dis.powersignal.OldVersion;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+
+import com.signal.dis.powersignal.R;
 
 import java.util.Date;
 

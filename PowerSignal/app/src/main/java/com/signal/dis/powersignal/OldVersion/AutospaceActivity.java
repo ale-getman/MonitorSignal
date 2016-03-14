@@ -1,4 +1,4 @@
-package com.signal.dis.powersignal;
+package com.signal.dis.powersignal.OldVersion;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -11,11 +11,15 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.signal.dis.powersignal.AutoService;
+import com.signal.dis.powersignal.DatabaseHelper;
+import com.signal.dis.powersignal.R;
+import com.signal.dis.powersignal.TabMenu;
 
 /**
  * Created by User on 20.11.2015.

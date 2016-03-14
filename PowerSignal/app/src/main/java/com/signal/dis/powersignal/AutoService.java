@@ -1,6 +1,7 @@
 package com.signal.dis.powersignal;
 
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentValues;
@@ -10,8 +11,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.IBinder;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 
 import android.support.v4.app.NotificationCompat;
@@ -79,10 +82,12 @@ public class AutoService extends Service {
     public Bitmap icon;
     public PendingIntent pendingIntent;
 
+    public String TAG = "LOGI";
+
     public void onCreate() {
         super.onCreate();
         Log.d("LOGI", "onCreate");
-        mDatabaseHelper = new DatabaseHelper(this, "mydatabase.db", null, 6);
+        mDatabaseHelper = new DatabaseHelper(this, "mydatabase.db", null, 7);
         sdb = mDatabaseHelper.getWritableDatabase();
 
         gps = new GPSTracker(AutoService.this);
@@ -231,6 +236,7 @@ public class AutoService extends Service {
     public void Determine(){
         GPSsetting();
         TIMEsetting();
+        check_bs();
         Log.d("LOGI", "time_2: " + time_mil);
         ContentValues newValues = new ContentValues();
         // Задайте значения для каждого столбца
@@ -260,5 +266,53 @@ public class AutoService extends Service {
 
         //CreateList();
         //TabMenu.progressBar.setProgress(TabMenu.progress);
+    }
+
+    public void check_bs(){
+        String cid_buff = cid + ".0";
+        String querySelect = "SELECT * FROM " + DatabaseHelper.BS_TABLE + " WHERE " + DatabaseHelper.BS_SID1 + " = " + cid_buff;
+        Cursor cursorSelect = sdb.rawQuery(querySelect,null);
+        if(cursorSelect.moveToFirst()) {
+            Log.d(TAG, "cid_1 : " + cursorSelect.getString(cursorSelect.getColumnIndex(DatabaseHelper.BS_SID1)));
+            if(cursorSelect.getString(cursorSelect.getColumnIndex(DatabaseHelper.BS_PLACE)).equals("Украина"))
+                notificationBS("Опасная базовая станция");
+        }
+        else
+        {
+            String querySelect_2 = "SELECT * FROM " + DatabaseHelper.BS_TABLE + " WHERE " + DatabaseHelper.BS_SID2 + " = " + cid_buff;
+            Cursor cursorSelect_2 = sdb.rawQuery(querySelect_2,null);
+            if(cursorSelect_2.moveToFirst()) {
+                Log.d(TAG, "cid_2 : " + cursorSelect_2.getString(cursorSelect_2.getColumnIndex(DatabaseHelper.BS_SID2)));
+                if(cursorSelect_2.getString(cursorSelect_2.getColumnIndex(DatabaseHelper.BS_PLACE)).equals("Украина"))
+                    notificationBS("Опасная базовая станция");
+            }
+            else
+                notificationBS("Базовой станции нет в базе");
+            cursorSelect_2.close();
+        }
+        cursorSelect.close();
+    }
+
+    public void notificationBS(String msg_alert){
+        long[] vibrate = new long[] { 1000, 1000, 1000 };
+
+        Notification.Builder builder = new Notification.Builder(AutoService.this);
+
+        builder.setContentIntent(pendingIntent)
+                .setSmallIcon(R.drawable.logo)
+                .setTicker("ВНИМАНИЕ")
+                .setWhen(System.currentTimeMillis())
+                .setAutoCancel(true)
+                .setVibrate(vibrate)
+                .setContentTitle("Предупреждение")
+                .setSound(Uri.withAppendedPath(MediaStore.Audio.Media.INTERNAL_CONTENT_URI, "1"))
+                .setContentText(msg_alert); // Текст уведомления
+
+        // Notification notification = builder.getNotification(); // до API 16
+        Notification notification = builder.build();
+
+        NotificationManager notificationManager = (NotificationManager) AutoService.this
+                .getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(321321, notification);
     }
 }

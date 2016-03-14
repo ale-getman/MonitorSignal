@@ -1,4 +1,4 @@
-package com.signal.dis.powersignal;
+package com.signal.dis.powersignal.OldVersion;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -9,13 +9,15 @@ import android.os.Bundle;
 import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.signal.dis.powersignal.DatabaseHelper;
+import com.signal.dis.powersignal.R;
 
 import java.text.DateFormat;
 import java.util.Date;
