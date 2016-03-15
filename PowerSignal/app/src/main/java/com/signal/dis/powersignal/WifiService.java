@@ -60,7 +60,7 @@ public class WifiService extends Service {
 
     public void onCreate() {
         super.onCreate();
-        mDatabaseHelper = new DatabaseHelper(this, "mydatabase.db", null, 6);
+        mDatabaseHelper = new DatabaseHelper(this, "mydatabase.db", null, 7);
         sdb = mDatabaseHelper.getWritableDatabase();
         mainWifiObj = (WifiManager) getSystemService(Context.WIFI_SERVICE);
         log = "test_heatmap";

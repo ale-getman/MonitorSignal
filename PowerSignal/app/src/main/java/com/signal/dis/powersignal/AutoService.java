@@ -65,6 +65,7 @@ public class AutoService extends Service {
     public long unixTime;
     public String time_mil;
     public PendingIntent pi;
+    public String flag_volume;
 
     public TelephonyManager Tel;
     public MyPhoneStateListener MyListener;
@@ -106,6 +107,7 @@ public class AutoService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d("LOGI", "onStartCommand");
         pi = intent.getParcelableExtra("pend");
+        flag_volume = intent.getStringExtra("flag_volume");
 
         Intent notificationIntent = new Intent(this, TabMenu.class);
         //notificationIntent.setAction(Constants.ACTION.MAIN_ACTION);
@@ -298,16 +300,27 @@ public class AutoService extends Service {
 
         Notification.Builder builder = new Notification.Builder(AutoService.this);
 
-        builder.setContentIntent(pendingIntent)
-                .setSmallIcon(R.drawable.logo)
-                .setTicker("ВНИМАНИЕ")
-                .setWhen(System.currentTimeMillis())
-                .setAutoCancel(true)
-                .setVibrate(vibrate)
-                .setContentTitle("Предупреждение")
-                .setSound(Uri.withAppendedPath(MediaStore.Audio.Media.INTERNAL_CONTENT_URI, "1"))
-                .setContentText(msg_alert); // Текст уведомления
-
+        if(flag_volume.equals("on")) {
+            builder.setContentIntent(pendingIntent)
+                    .setSmallIcon(R.drawable.logo)
+                    .setTicker("ВНИМАНИЕ")
+                    .setWhen(System.currentTimeMillis())
+                    .setAutoCancel(true)
+                    .setVibrate(vibrate)
+                    .setContentTitle("Предупреждение")
+                    .setSound(Uri.withAppendedPath(MediaStore.Audio.Media.INTERNAL_CONTENT_URI, "1"))
+                    .setContentText(msg_alert); // Текст уведомления
+        }
+        else
+        {
+            builder.setContentIntent(pendingIntent)
+                    .setSmallIcon(R.drawable.logo)
+                    .setTicker("ВНИМАНИЕ")
+                    .setWhen(System.currentTimeMillis())
+                    .setAutoCancel(true)
+                    .setContentTitle("Предупреждение")
+                    .setContentText(msg_alert); // Текст уведомления
+        }
         // Notification notification = builder.getNotification(); // до API 16
         Notification notification = builder.build();
 

@@ -95,7 +95,8 @@ public class TabMenu extends Activity {
     public String cid,sector,lac;
 
     public Button startService;
-    public ImageButton imageButton;
+    public ImageButton imageButton, volumeBtn;
+    public boolean flag_volume = true;
     public PowerManager pm;
     public PowerManager.WakeLock wl;
     public int buf_flag;
@@ -112,6 +113,10 @@ public class TabMenu extends Activity {
         setContentView(R.layout.tab_menu);
 
         buf_flag = 0;
+
+        imageButton = (ImageButton) findViewById(R.id.imageButton);
+        volumeBtn = (ImageButton) findViewById(R.id.volumeBtn);
+        volumeBtn.setEnabled(false);
 
         Intent intent_t = new Intent();
         pi = createPendingResult(TASK1_CODE, intent_t, 0);
@@ -197,8 +202,9 @@ public class TabMenu extends Activity {
                 if(Tel.getSimOperatorName().equals("PHoenix")) {
                     wl.acquire();
                     buf_flag = 1;
-                    startService(new Intent(TabMenu.this, AutoService.class).putExtra("pend", pi));
+                    startService(new Intent(TabMenu.this, AutoService.class).putExtra("pend", pi).putExtra("flag_volume", "on"));
                     startService.setEnabled(false);
+                    volumeBtn.setEnabled(true);
                 }
                 else
                     Toast.makeText(getApplicationContext(), "Пожалуйста, проверьте, чтобы sim-карта PHoenix находилась в первом слоте или замените саму карточку на соответствующую.", Toast.LENGTH_LONG).show();
@@ -206,13 +212,31 @@ public class TabMenu extends Activity {
             }
         });
 
-        imageButton = (ImageButton) findViewById(R.id.imageButton);
-
         imageButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 showDialog(0);
+            }
+        });
+
+        volumeBtn.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if(flag_volume) {
+                    volumeBtn.setImageResource(R.drawable.ic_volume_off_black_24dp);
+                    stopService(new Intent(TabMenu.this, AutoService.class));
+                    startService(new Intent(TabMenu.this, AutoService.class).putExtra("pend", pi).putExtra("flag_volume", "off"));
+                    flag_volume = false;
+                }
+                else
+                {
+                    volumeBtn.setImageResource(R.drawable.ic_volume_up_black_24dp);
+                    stopService(new Intent(TabMenu.this, AutoService.class));
+                    startService(new Intent(TabMenu.this, AutoService.class).putExtra("pend", pi).putExtra("flag_volume", "on"));
+                    flag_volume = true;
+                }
             }
         });
         /*manager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);

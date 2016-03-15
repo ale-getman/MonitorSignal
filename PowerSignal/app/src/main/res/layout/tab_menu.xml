@@ -107,6 +107,13 @@
             style="@style/btn_text_style"
             android:layout_weight="1"/>
 
+            <ImageButton
+                android:layout_width="30dp"
+                android:layout_height="match_parent"
+                android:id="@+id/volumeBtn"
+                android:src="@drawable/ic_volume_up_black_24dp"
+                android:background="#fafafa"/>
+
             </LinearLayout>
 
     <!--<TabHost
